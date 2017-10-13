@@ -38,6 +38,10 @@ export class ShoppingListService {
     this._emitIngredientsChanged();
   }
 
+  deleteIngredient(index: number) {
+    this.ingredients.splice(index, 1);
+    this._emitIngredientsChanged();
+  }
   private _emitIngredientsChanged() {
     this.ingredientsChanged.next(this.ingredients.slice());
   }
