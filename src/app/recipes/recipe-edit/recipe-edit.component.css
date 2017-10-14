@@ -1,3 +1,13 @@
 .ingredients-row {
   margin: 0.5em;
 }
+
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+  box-shadow: 0px 0px 4px red;
+  border: 1px solid red;
+}
+
+.image-preview {
+  max-width: 100%;
+}
