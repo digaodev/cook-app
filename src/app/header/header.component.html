@@ -15,22 +15,25 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li>
+        <li routerLinkActive="active">
           <a routerLink="/signup">Sign Up</a>
         </li>
-          <li class="dropdown" appDropdown>
-            <a class="dropdown-toggle" role="button">Manage Data 
+        <li routerLinkActive="active">
+          <a routerLink="/signin">Sign In</a>
+        </li>
+        <li class="dropdown" appDropdown>
+          <a class="dropdown-toggle" role="button">Manage Data 
               <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li>
-                <a (click)="onSaveData()">Save Data</a>
-              </li>
-              <li>
-                  <a (click)="onFetchData()">Fetch Data</a>
-                </li>              
-            </ul>
-          </li>
-        </ul>
+          <ul class="dropdown-menu">
+            <li>
+              <a (click)="onSaveData()">Save Data</a>
+            </li>
+            <li>
+              <a (click)="onFetchData()">Fetch Data</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>

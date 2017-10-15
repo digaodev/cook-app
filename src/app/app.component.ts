@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 import * as firebase from 'firebase';
+
 import { Config } from './shared/config';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
