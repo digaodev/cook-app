@@ -1,3 +1,4 @@
+import { AuthService } from './../auth/auth.service';
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 
@@ -11,21 +12,23 @@ import { Config } from '../shared/config';
 
 @Injectable()
 export class DataStorageService {
-
-  private _endpointURL = `https://${Config.getFirebaseAuthDomain()}`;
-
-  private _recipesEndpointURL = `${this._endpointURL}/recipes.json`;
+  private _recipesDatabaseURL = `https://${Config.getFirebaseDatabaseDomain()}/recipes.json`;
 
   constructor(private _http: Http,
-    private _recipeService: RecipeService) { }
+    private _recipeService: RecipeService,
+    private _authService: AuthService) { }
 
   storeRecipes() {
-    return this._http.put(this._recipesEndpointURL,
+    const token = this._authService.getToken();
+
+    return this._http.put(`${this._recipesDatabaseURL}?auth=${token}`,
       this._recipeService.getRecipes());
   }
 
   getRecipes() {
-    return this._http.get(this._recipesEndpointURL)
+    const token = this._authService.getToken();
+
+    this._http.get(`${this._recipesDatabaseURL}?auth=${token}`)
       .map((response: Response) => {
         const recipes: Recipe[] = response.json();
         for (const recipe of recipes) {

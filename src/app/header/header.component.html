@@ -15,15 +15,23 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li routerLinkActive="active">
-          <a routerLink="/signup">Sign Up</a>
+        <ng-template [ngIf]="!authService.isAuthenticated()">
+          <li routerLinkActive="active">
+            <a routerLink="/signup">Sign Up</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/signin">Sign In</a>
+          </li>
+        </ng-template>
+
+        <li>
+          <a (click)="onLogout()" *ngIf="authService.isAuthenticated()">Sign Out</a>
         </li>
-        <li routerLinkActive="active">
-          <a routerLink="/signin">Sign In</a>
-        </li>
-        <li class="dropdown" appDropdown>
-          <a class="dropdown-toggle" role="button">Manage Data 
-              <span class="caret"></span></a>
+
+        <li class="dropdown" appDropdown *ngIf="authService.isAuthenticated()">
+          <a class="dropdown-toggle" role="button">Manage Data
+            <span class="caret"></span>
+          </a>
           <ul class="dropdown-menu">
             <li>
               <a (click)="onSaveData()">Save Data</a>
