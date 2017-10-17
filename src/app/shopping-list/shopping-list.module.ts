@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { SharedModule } from './../shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -12,7 +13,7 @@ import { ShoppingListComponent } from './shopping-list.component';
   ],
   imports: [
     CommonModule, // ngif, ngfor, etc
-    SharedModule
+    FormsModule
   ]
 })
 export class ShoppingListModule {
