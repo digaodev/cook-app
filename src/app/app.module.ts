@@ -9,12 +9,6 @@ import { ShoppingListModule } from './shopping-list/shopping-list.module';
 
 import { AppComponent } from './app.component';
 
-import { AuthGuard } from './auth/auth-guard.service';
-import { AuthService } from './auth/auth.service';
-import { ShoppingListService } from './shopping-list/shopping-list.service';
-import { RecipeService } from './recipes/recipe.service';
-import { DataStorageService } from './shared/data-storage.service';
-
 import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
@@ -29,13 +23,6 @@ import { AppRoutingModule } from './app-routing.module';
     SharedModule,
     CoreModule,
     ShoppingListModule
-  ],
-  providers: [
-    ShoppingListService,
-    RecipeService,
-    DataStorageService,
-    AuthService,
-    AuthGuard
   ],
   bootstrap: [AppComponent]
 })
