@@ -1,6 +1,6 @@
 import { AuthService } from './../auth/auth.service';
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import 'rxjs/add/operator/map';
 
@@ -14,23 +14,27 @@ import { Config } from '../shared/config';
 export class DataStorageService {
   private _recipesDatabaseURL = `https://${Config.getFirebaseDatabaseDomain()}/recipes.json`;
 
-  constructor(private _http: Http,
+  constructor(private _httpClient: HttpClient,
     private _recipeService: RecipeService,
     private _authService: AuthService) { }
 
   storeRecipes() {
     const token = this._authService.getToken();
 
-    return this._http.put(`${this._recipesDatabaseURL}?auth=${token}`,
-      this._recipeService.getRecipes());
+    return this._httpClient.put(
+      // `${this._recipesDatabaseURL}?auth=${token}`,
+      this._recipesDatabaseURL,
+      this._recipeService.getRecipes(),
+      {
+        params: new HttpParams().set('auth', token)
+      });
   }
 
   getRecipes() {
     const token = this._authService.getToken();
 
-    this._http.get(`${this._recipesDatabaseURL}?auth=${token}`)
-      .map((response: Response) => {
-        const recipes: Recipe[] = response.json();
+    this._httpClient.get<Recipe[]>(`${this._recipesDatabaseURL}?auth=${token}`)
+      .map((recipes) => {
         for (const recipe of recipes) {
           if (!recipe['ingredients']) {
             recipe['ingredients'] = [];
