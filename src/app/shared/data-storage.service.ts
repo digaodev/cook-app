@@ -24,16 +24,13 @@ export class DataStorageService {
     return this._httpClient.put(
       // `${this._recipesDatabaseURL}?auth=${token}`,
       this._recipesDatabaseURL,
-      this._recipeService.getRecipes(),
-      {
-        params: new HttpParams().set('auth', token)
-      });
+      this._recipeService.getRecipes());
   }
 
   getRecipes() {
     const token = this._authService.getToken();
 
-    this._httpClient.get<Recipe[]>(`${this._recipesDatabaseURL}?auth=${token}`)
+    this._httpClient.get<Recipe[]>(this._recipesDatabaseURL)
       .map((recipes) => {
         for (const recipe of recipes) {
           if (!recipe['ingredients']) {
