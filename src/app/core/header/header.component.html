@@ -15,6 +15,7 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
+        <!-- refactor: accessing services from template can cause problems with AOT-->
         <ng-template [ngIf]="!authService.isAuthenticated()">
           <li routerLinkActive="active">
             <a routerLink="/signup">Sign Up</a>
@@ -25,9 +26,10 @@
         </ng-template>
 
         <li>
+          <!-- refactor: accessing services from template can cause problems with AOT-->
           <a (click)="onLogout()" *ngIf="authService.isAuthenticated()">Sign Out</a>
         </li>
-
+        <!-- refactor: accessing services from template can cause problems with AOT-->
         <li class="dropdown" appDropdown *ngIf="authService.isAuthenticated()">
           <a class="dropdown-toggle" role="button">Manage Data
             <span class="caret"></span>

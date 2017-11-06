@@ -1,3 +1,4 @@
+import { UploadImage } from './../shared/uploadImage.model';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
@@ -13,14 +14,16 @@ export class RecipeService {
 
   private recipes: Recipe[] =
   [new Recipe('Schnitzel', 'Schnitzel is good',
-    'https://source.unsplash.com/collection/146135/800x600',
+    [new UploadImage('https://source.unsplash.com/collection/146135/800x600',
+      'https://source.unsplash.com/collection/146135/90x60')],
     [
       new Ingredient('Meat', 1),
       new Ingredient('Fries', 20)
     ]),
 
   new Recipe('Burger', 'Burger is awesome',
-    'https://source.unsplash.com/collection/146135/800x600',
+    [new UploadImage('https://source.unsplash.com/collection/146135/800x600',
+      'https://source.unsplash.com/collection/146135/90x60')],
     [
       new Ingredient('Meat', 1),
       new Ingredient('Bread', 1)

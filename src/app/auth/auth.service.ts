@@ -6,6 +6,7 @@ import * as firebase from 'firebase';
 @Injectable()
 export class AuthService {
   private _token: string;
+  private _email: string;
 
   constructor(private _router: Router) {}
 
@@ -17,6 +18,7 @@ export class AuthService {
   signinUser(email: string, password: string) {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((res) => {
+        this._email = res.email;
         this._router.navigate(['/']);
         firebase.auth().currentUser.getIdToken()
           .then((token: string) => this._token = token);
@@ -28,6 +30,14 @@ export class AuthService {
     firebase.auth().currentUser.getIdToken()
       .then((token: string) => this._token = token);
       return this._token;
+  }
+
+  getFullEmail() {
+    return this._email;
+  }
+
+  getUsernameFromEmail() {
+    return this._email.split('@')[0];
   }
 
   signoutUser() {

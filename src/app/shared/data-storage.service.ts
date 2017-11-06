@@ -1,10 +1,10 @@
-import { AuthService } from './../auth/auth.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 import 'rxjs/add/operator/map';
 
 import { RecipeService } from './../recipes/recipe.service';
+import { AuthService } from './../auth/auth.service';
 
 import { Recipe } from './recipe.model';
 
@@ -19,8 +19,6 @@ export class DataStorageService {
     private _authService: AuthService) { }
 
   storeRecipes() {
-    const token = this._authService.getToken();
-
     return this._httpClient.put(
       // `${this._recipesDatabaseURL}?auth=${token}`,
       this._recipesDatabaseURL,
@@ -28,8 +26,6 @@ export class DataStorageService {
   }
 
   getRecipes() {
-    const token = this._authService.getToken();
-
     this._httpClient.get<Recipe[]>(this._recipesDatabaseURL)
       .map((recipes) => {
         for (const recipe of recipes) {

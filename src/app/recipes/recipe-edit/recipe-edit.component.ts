@@ -1,22 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { UploadImage } from './../../shared/uploadImage.model';
+import { Component, OnInit, AfterContentInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { RecipeService } from './../recipe.service';
+import { ScriptService } from './../../shared/script.service';
+import { AuthService } from '../../auth/auth.service';
+
+declare const cloudinary: any;
+declare const $: any;
 
 @Component({
   selector: 'app-recipe-edit',
   templateUrl: './recipe-edit.component.html',
-  styleUrls: ['./recipe-edit.component.css']
+  styleUrls: ['./recipe-edit.component.css'],
+  providers: [ScriptService]
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, AfterContentInit {
   id: number;
   editMode = false;
   recipeForm: FormGroup;
+  imagesUploadResponse = [];
 
   constructor(private route: ActivatedRoute,
     private recipeService: RecipeService,
-    private router: Router) { }
+    private router: Router,
+    private scriptService: ScriptService,
+    private authService: AuthService) { }
 
   ngOnInit() {
     this.route.params
@@ -27,17 +37,42 @@ export class RecipeEditComponent implements OnInit {
       });
   }
 
+  ngAfterContentInit() {
+    this.scriptService.load('cloudinary', 'jQuery')
+      .then(() => {
+        const folder = this.authService.getFullEmail();
+        cloudinary.setCloudName('dwrqw2e4u');
+        cloudinary.applyUploadWidget(
+          document.getElementById('opener'),
+          {
+            // cloud_name: 'dwrqw2e4u',
+            api_key: '514982885216574',
+            upload_preset: 'cpgu2jvp',
+            sources: ['local'],
+            max_files: 8,
+            folder: folder,
+            resource_type: 'image',
+            max_file_size: 10000000 // (10 MB)
+          },
+          function (error, result) {
+            console.log('afterOnInit');
+            console.log(error, result);
+          }
+        );
+      }).catch(error => console.log(error));
+  }
+
   private initForm() {
     let recipeName = '';
-    let recipeImagePath = '';
+    // let recipeImagePaths = '';
     let recipeDescription = '';
-    let recipeIngredients = new FormArray([]);
+    const recipeIngredients = new FormArray([]);
 
     if (this.editMode) {
       const recipe = this.recipeService.getRecipeById(this.id);
       recipeName = recipe.name;
-      recipeImagePath = recipe.imagePath;
       recipeDescription = recipe.description;
+      this.imagesUploadResponse = recipe.images;
 
       if (recipe['ingredients']) {
         recipe['ingredients'].forEach((ingredient) => {
@@ -56,7 +91,7 @@ export class RecipeEditComponent implements OnInit {
     }
     this.recipeForm = new FormGroup({
       'name': new FormControl(recipeName, Validators.required),
-      'imagePath': new FormControl(recipeImagePath, Validators.required),
+      // 'imagePath': new FormControl(recipeImagePaths, Validators.required),
       'description': new FormControl(recipeDescription, Validators.required),
       'ingredients': recipeIngredients
     });
@@ -97,4 +132,60 @@ export class RecipeEditComponent implements OnInit {
   onCancel() {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
+
+  // openUploadWidget() {
+  //   const folder = this.authService.getFullEmail();
+  //   // cloudinary.openUploadWidget({
+  //   //   cloud_name: 'dwrqw2e4u',
+  //   //   upload_preset: 'cpgu2jvp',
+  //   //   sources: ['local'],
+  //   //   max_files: 6,
+  //   //   folder: folder,
+  //   //   resource_type: 'image',
+  //   //   max_file_size: 10000000, // (10 MB)
+  //   //   theme: 'purple'
+  //   // }, (error, result) => {
+  //   //     if (error) {
+  //   //       console.log(error);
+  //   //     }
+  //   //     this.imagesUploadResponse = result;
+  //   //   });
+  //   cloudinary.openUploadWidget({
+  //     cloud_name: 'dwrqw2e4u',
+  //     api_key: '514982885216574',
+  //     upload_preset: 'cpgu2jvp',
+  //     sources: ['local'],
+  //     max_files: 8,
+  //     folder: folder,
+  //     resource_type: 'image',
+  //     max_file_size: 10000000 // (10 MB)
+  //     // theme: 'purple' // too slow -> 80kb background by default
+  //   }, (error, result) => {
+  //     if (error) {
+  //       console.log(error);
+  //     }
+  //     result.map(element => {
+  //       this.imagesUploadResponse.push(new UploadImage(
+  //         element.url,
+  //         element.thumbnail_url,
+  //         element.original_filename,
+  //         element.delete_token,
+  //         element.format,
+  //         element.public_id,
+  //         element.bytes
+  //       ));
+  //     });
+  //     // this.imagesUploadResponse = result;
+  //     console.log(this.imagesUploadResponse);
+  //   });
+  // }
+
+  // onDeleteImage(delete_token) {
+  //   // console.log(delete_token);
+  //   // console.log(cloudinary);
+  //   $.cloudinary.delete_by_token(delete_token);
+  //   // curl https://api.cloudinary.com/v1_1/demo/delete_by_token -X POST --data 'token=delete_token'
+
+  // }
+
 }

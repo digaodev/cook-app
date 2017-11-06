@@ -1,4 +1,4 @@
-<a class="list-group-item clearfix" 
+<a class="list-group-item clearfix"
 [routerLink]="[id]"
 routerLinkActive="active"
 >
@@ -7,9 +7,9 @@ routerLinkActive="active"
     <p class="list-group-item-text">{{ recipeItem.description }}</p>
   </div>
   <span class="pull-right">
-    <img [src]="recipeItem.imagePath" 
-    alt="a recipe photo" 
-    class="img-responsive" 
+    <img [src]="recipeItem.images[0].url"
+    alt="a recipe photo"
+    class="img-responsive"
     style="max-height: 50px;">
   </span>
 </a>
