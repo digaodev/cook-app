@@ -1,5 +1,5 @@
-import { UploadImage } from './../../shared/uploadImage.model';
-import { Component, OnInit, AfterContentInit } from '@angular/core';
+import { UploadedImage } from './../../shared/uploadedImage.model';
+import { AfterContentInit, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
@@ -38,21 +38,61 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
   }
 
   ngAfterContentInit() {
-    this.scriptService.load('cloudinary', 'jQuery')
+    // the order of import matters in this case: JQuery first
+    this.scriptService.load( 'jQuery', 'cloudinary')
       .then(() => {
         const folder = this.authService.getFullEmail();
         cloudinary.setCloudName('dwrqw2e4u');
         cloudinary.applyUploadWidget(
-          document.getElementById('opener'),
+          document.getElementById('upload-widget-btn'),
           {
             // cloud_name: 'dwrqw2e4u',
             api_key: '514982885216574',
             upload_preset: 'cpgu2jvp',
             sources: ['local'],
-            max_files: 8,
+            max_files: 4,
             folder: folder,
             resource_type: 'image',
-            max_file_size: 10000000 // (10 MB)
+            tags: ['user'],
+            stylesheet: `
+            #cloudinary-widget .button, #cloudinary-widget .button.small_button {
+              background: #4a2f65;
+            }
+
+            #cloudinary-widget .button:hover, #cloudinary-widget .button.small_button:hover, #cloudinary-widget .upload_button_holder:hover .button {
+              background: #845aad;
+            }
+
+            #cloudinary-widget .panel.progress .thumbnails .thumbnail .error {
+              color: #4a2f65;
+            }
+
+            .widget .header .sources .source.active {
+              background-color: #4a2f65;
+            }
+
+            .widget .header {
+              border-color: #4a2f65;
+            }
+
+            `,
+            button_caption: 'Upload de Imagens',
+            text: {
+              // 'powered_by_cloudinary': 'Powered by Cloudinary - Image management in the cloud',
+              'sources.local.title': 'Meus Arquivos',
+              'sources.local.drop_file': 'Arraste e solte a imagem aqui',
+              'sources.local.drop_files': 'Arraste e solte as imagens aqui',
+              'sources.local.drop_or': 'ou',
+              'sources.local.select_file': 'Selecione a imagem',
+              'sources.local.select_files': 'Selecione as imagens',
+              'progress.uploading': 'Transferindo...',
+              'progress.upload_cropped': 'Upload',
+              'progress.processing': 'Processando...',
+              'progress.retry_upload': 'Tente Novamente',
+              'progress.use_succeeded': 'OK',
+              'progress.failed_note': 'Houve um problema com algumas das imagens'
+            },
+            max_file_size: 10000000 // (10 MB),
           },
           function (error, result) {
             console.log('afterOnInit');

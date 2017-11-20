@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 
 import { AuthService } from './../../auth/auth.service';
@@ -11,7 +12,8 @@ import { DataStorageService } from './../../shared/data-storage.service';
 export class HeaderComponent {
 
   constructor(private _dataStorageService: DataStorageService,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private _router: Router) { }
 
   onSaveData() {
     this._dataStorageService.storeRecipes()
@@ -26,5 +28,6 @@ export class HeaderComponent {
 
   onLogout() {
     this.authService.signoutUser();
+    this._router.navigate(['signin']);
   }
 }
