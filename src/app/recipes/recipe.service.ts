@@ -13,22 +13,25 @@ export class RecipeService {
   recipesChanged = new Subject<Recipe[]>();
 
   private recipes: Recipe[] =
-  [new Recipe('Schnitzel', 'Schnitzel is good',
-    [new UploadedImage('https://source.unsplash.com/collection/146135/800x600',
-      'https://source.unsplash.com/collection/146135/90x60')],
+  [new Recipe(
+    'Schnitzel',
+    'Schnitzel is good',
     [
       new Ingredient('Meat', 1),
       new Ingredient('Fries', 20)
-    ]),
+    ],
+    'https://source.unsplash.com/collection/146135/800x600'
+  ),
 
-  new Recipe('Burger', 'Burger is awesome',
-    [new UploadedImage('https://source.unsplash.com/collection/146135/800x600',
-      'https://source.unsplash.com/collection/146135/90x60')],
+  new Recipe(
+    'Burger',
+    'Burger is awesome',
     [
       new Ingredient('Meat', 1),
       new Ingredient('Bread', 1)
-    ]),
-  ];
+    ],
+    'https://source.unsplash.com/collection/146135/800x600'
+  )];
 
   constructor(private shoppingListService: ShoppingListService) { }
 

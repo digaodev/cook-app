@@ -28,35 +28,49 @@
 
       <div class="row">
         <div class="col-xs-12">
-          <p>Click the upload button below to send your recipe images</p>
+          <div class="form-group">
+            <label for="imageURL">Recipe Image URL</label>
+            <input type="text" name="imageURL" id="imageURL" class="form-control" formControlName="imageURL" #imageURL>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <img [src]="imageURL.value" class="img-responsive image-preview">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <p>You can also click the upload button below to send your recipe images</p>
+        </div>
+      </div>
+
+      <a id="upload-widget-btn"></a>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <p *ngIf="imagesUploaded.length === 0">No photos were added yet.</p>
+          <span class="form-group" *ngFor="let image of imagesUploadResponse">
+            <img [src]="image.thumbnail_url" class="img-responsive image-preview">
+            <span *ngIf="image.delete_token">
+              <button type="button" class="btn btn-danger" (click)="onDeleteImage(image.delete_token)">x</button>
+            </span>
+          </span>
         </div>
       </div>
 
       <!-- <div class="row">
-        <div class="col-xs-12">
-          <div class="form-group">
-            <label for="imagePaths">Image URL</label>
-            <input type="text" name="imagePaths" id="imagePaths" class="form-control" formControlName="imagePaths" #imagePaths>
+        <div class="col-xs-12" formArrayName="recipeUploadedImages">
+          <div class="row images-row" *ngFor="let imageControl of recipeForm.get('images').controls, let i = index" [formGroupName]="i">
+            <div class="col-xs-8">
+              <img [src]="uploadedImage" class="img-responsive image-preview" formControlName="recipeUploadedImages">
+            </div>
+            <div class="col-xs-2">
+              <button type="button" class="btn btn-danger" (click)="onDeleteImage(i)">X</button>
+            </div>
           </div>
-        </div>
-      </div> -->
-
-      <a id="upload-widget-btn"></a>
-
-      <!-- <div class="row">
-        <div class="col-xs-12">
-          <p *ngIf="imagesUploadResponse.length === 0">No photos were added yet.</p>
-          <span class="form-group" *ngFor="let image of imagesUploadResponse">
-            <img
-            [src]="image.thumbnail_url"
-            class="img-responsive image-preview" >
-            <span *ngIf="image.delete_token">
-              <button
-              type="button"
-              class="btn btn-danger"
-              (click)="onDeleteImage(image.delete_token)">x</button>
-            </span>
-          </span>
         </div>
       </div> -->
 

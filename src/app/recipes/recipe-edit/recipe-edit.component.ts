@@ -20,7 +20,7 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
   id: number;
   editMode = false;
   recipeForm: FormGroup;
-  imagesUploadResponse = [];
+  imagesUploaded = [];
 
   constructor(private route: ActivatedRoute,
     private recipeService: RecipeService,
@@ -90,12 +90,11 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
               'progress.processing': 'Processando...',
               'progress.retry_upload': 'Tente Novamente',
               'progress.use_succeeded': 'OK',
-              'progress.failed_note': 'Houve um problema com algumas das imagens'
+              'progress.failed_note': 'Houve um problema com uma ou mais imagens'
             },
             max_file_size: 10000000 // (10 MB),
           },
           function (error, result) {
-            console.log('afterOnInit');
             console.log(error, result);
           }
         );
@@ -104,15 +103,27 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
 
   private initForm() {
     let recipeName = '';
-    // let recipeImagePaths = '';
     let recipeDescription = '';
+    let recipeImageURL = '';
+    // const recipeUploadedImages = new FormArray([]);
     const recipeIngredients = new FormArray([]);
 
     if (this.editMode) {
       const recipe = this.recipeService.getRecipeById(this.id);
       recipeName = recipe.name;
       recipeDescription = recipe.description;
-      this.imagesUploadResponse = recipe.images;
+      recipeImageURL = recipe.imageURL;
+      this.imagesUploaded = recipe.images || [];
+
+      // if (recipe['images']) {
+      //   recipe['images'].forEach((image) => {
+      //     recipeUploadedImages.push(
+      //       new FormGroup({
+      //         'uploadedImage': new FormControl(image.thumbnail_url)
+      //       })
+      //     );
+      //   });
+      // }
 
       if (recipe['ingredients']) {
         recipe['ingredients'].forEach((ingredient) => {
@@ -131,9 +142,10 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
     }
     this.recipeForm = new FormGroup({
       'name': new FormControl(recipeName, Validators.required),
-      // 'imagePath': new FormControl(recipeImagePaths, Validators.required),
       'description': new FormControl(recipeDescription, Validators.required),
-      'ingredients': recipeIngredients
+      'ingredients': recipeIngredients,
+      'imageURL': new FormControl(recipeImageURL)
+      // 'images': recipeUploadedImages
     });
   }
 

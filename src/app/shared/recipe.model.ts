@@ -4,7 +4,8 @@ export class Recipe {
   constructor(
     public name: string,
     public description: string,
-    public images: UploadedImage[],
     public ingredients: Ingredient[],
-    public imageURL?: string) { }
+    public imageURL?: string,
+    public images?: UploadedImage[]
+    ) { }
 }
