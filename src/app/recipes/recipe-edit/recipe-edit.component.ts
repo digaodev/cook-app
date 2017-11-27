@@ -1,11 +1,18 @@
-import { UploadedImage } from './../../shared/uploadedImage.model';
-import { AfterContentInit, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  OnInit,
+  ViewEncapsulation
+} from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
+import { Recipe } from './../../shared/recipe.model';
+import { UploadedImage } from './../../shared/uploadedImage.model';
+
 import { RecipeService } from './../recipe.service';
-import { ScriptService } from './../../shared/script.service';
 import { AuthService } from '../../auth/auth.service';
+// import { CloudinaryService } from '../../shared/cloudinary.service';
 
 declare const cloudinary: any;
 declare const $: any;
@@ -13,92 +20,112 @@ declare const $: any;
 @Component({
   selector: 'app-recipe-edit',
   templateUrl: './recipe-edit.component.html',
-  styleUrls: ['./recipe-edit.component.css'],
-  providers: [ScriptService]
+  styleUrls: ['./recipe-edit.component.css']
 })
 export class RecipeEditComponent implements OnInit, AfterContentInit {
   id: number;
   editMode = false;
   recipeForm: FormGroup;
   imagesUploaded = [];
+  imagesUploadedSaved = [];
+  imagesUploadedResponse = [];
 
-  constructor(private route: ActivatedRoute,
+  constructor(
+    private route: ActivatedRoute,
     private recipeService: RecipeService,
     private router: Router,
-    private scriptService: ScriptService,
-    private authService: AuthService) { }
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.route.params
-      .subscribe((params: Params) => {
-        this.id = +params['id'];
-        this.editMode = params['id'] ? true : false;
-        this.initForm();
-      });
+    this.route.params.subscribe((params: Params) => {
+      this.id = +params['id'];
+      this.editMode = params['id'] ? true : false;
+      this.initForm();
+    });
   }
 
   ngAfterContentInit() {
-    // the order of import matters in this case: JQuery first
-    this.scriptService.load( 'jQuery', 'cloudinary')
-      .then(() => {
-        const folder = this.authService.getFullEmail();
-        cloudinary.setCloudName('dwrqw2e4u');
-        cloudinary.applyUploadWidget(
-          document.getElementById('upload-widget-btn'),
-          {
-            // cloud_name: 'dwrqw2e4u',
-            api_key: '514982885216574',
-            upload_preset: 'cpgu2jvp',
-            sources: ['local'],
-            max_files: 4,
-            folder: folder,
-            resource_type: 'image',
-            tags: ['user'],
-            stylesheet: `
-            #cloudinary-widget .button, #cloudinary-widget .button.small_button {
-              background: #4a2f65;
-            }
+    const folder = this.authService.getFullEmail();
+    const tags = ['user'];
+    const buttonCaption = 'Clique para fazer upload de imagens';
+    const sources = ['local'];
+    const maxFiles = 4;
+    const maxFileSize = 10000000; // (10 MB);
+    const resourceType = 'image';
 
-            #cloudinary-widget .button:hover, #cloudinary-widget .button.small_button:hover, #cloudinary-widget .upload_button_holder:hover .button {
-              background: #845aad;
-            }
+    const buttonText = {
+      'sources.local.title': 'Meus Arquivos',
+      'sources.local.drop_file': 'Arraste e solte a imagem aqui',
+      'sources.local.drop_files': 'Arraste e solte as imagens aqui',
+      'sources.local.drop_or': 'ou',
+      'sources.local.select_file': 'Selecione a imagem',
+      'sources.local.select_files': 'Selecione as imagens',
+      'progress.uploading': 'Transferindo...',
+      'progress.upload_cropped': 'Upload',
+      'progress.processing': 'Processando...',
+      'progress.retry_upload': 'Tente Novamente',
+      'progress.use_succeeded': 'OK',
+      'progress.failed_note': 'Houve um problema com uma ou mais imagens'
+    };
 
-            #cloudinary-widget .panel.progress .thumbnails .thumbnail .error {
-              color: #4a2f65;
-            }
+    const cssStylesheet = `
+             #cloudinary-widget .button, #cloudinary-widget .button.small_button {
+               background: #4a2f65;
+             }
 
-            .widget .header .sources .source.active {
-              background-color: #4a2f65;
-            }
+             #cloudinary-widget .button:hover, #cloudinary-widget .button.small_button:hover, #cloudinary-widget .upload_button_holder:hover .button {
+               background: #845aad;
+             }
 
-            .widget .header {
-              border-color: #4a2f65;
-            }
+             #cloudinary-widget .panel.progress .thumbnails .thumbnail .error {
+               color: #4a2f65;
+             }
 
-            `,
-            button_caption: 'Upload de Imagens',
-            text: {
-              // 'powered_by_cloudinary': 'Powered by Cloudinary - Image management in the cloud',
-              'sources.local.title': 'Meus Arquivos',
-              'sources.local.drop_file': 'Arraste e solte a imagem aqui',
-              'sources.local.drop_files': 'Arraste e solte as imagens aqui',
-              'sources.local.drop_or': 'ou',
-              'sources.local.select_file': 'Selecione a imagem',
-              'sources.local.select_files': 'Selecione as imagens',
-              'progress.uploading': 'Transferindo...',
-              'progress.upload_cropped': 'Upload',
-              'progress.processing': 'Processando...',
-              'progress.retry_upload': 'Tente Novamente',
-              'progress.use_succeeded': 'OK',
-              'progress.failed_note': 'Houve um problema com uma ou mais imagens'
-            },
-            max_file_size: 10000000 // (10 MB),
-          },
-          function (error, result) {
-            console.log(error, result);
+             .widget .header .sources .source.active {
+               background-color: #4a2f65;
+             }
+
+             .widget .header {
+               border-color: #4a2f65;
+             }
+             `;
+    cloudinary.applyUploadWidget(
+      document.getElementById('upload-widget-btn'),
+      {
+        cloud_name: 'dwrqw2e4u',
+        api_key: '514982885216574',
+        upload_preset: 'hrxjoxko',
+        folder: folder,
+        tags: tags,
+        sources: sources,
+        max_files: maxFiles,
+        max_file_size: maxFileSize,
+        resource_type: resourceType,
+        button_caption: buttonCaption,
+        text: buttonText,
+        stylesheet: cssStylesheet
+      },
+      (error, result) => {
+        if (result) {
+          for (const image of result) {
+            this.imagesUploadedResponse.push(
+              new UploadedImage(
+                image.secure_url,
+                image.thumbnail_url,
+                image.original_filename,
+                image.format,
+                image.public_id,
+                image.bytes
+              )
+            );
           }
-        );
-      }).catch(error => console.log(error));
+        }
+        // console.log('error', error);
+        // console.log('result', result);
+        // console.log('imagesUploadedResponse => ', this.imagesUploadedResponse);
+      }
+    );
   }
 
   private initForm() {
@@ -113,24 +140,19 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
       recipeName = recipe.name;
       recipeDescription = recipe.description;
       recipeImageURL = recipe.imageURL;
-      this.imagesUploaded = recipe.images || [];
 
-      // if (recipe['images']) {
-      //   recipe['images'].forEach((image) => {
-      //     recipeUploadedImages.push(
-      //       new FormGroup({
-      //         'uploadedImage': new FormControl(image.thumbnail_url)
-      //       })
-      //     );
-      //   });
-      // }
+      if (recipe.images) {
+        this.imagesUploadedSaved = recipe.images.slice();
+      } else {
+        this.imagesUploadedSaved = [];
+      }
 
       if (recipe['ingredients']) {
-        recipe['ingredients'].forEach((ingredient) => {
+        recipe['ingredients'].forEach(ingredient => {
           recipeIngredients.push(
             new FormGroup({
-              'name': new FormControl(ingredient.name, Validators.required),
-              'amount': new FormControl(ingredient.amount, [
+              name: new FormControl(ingredient.name, Validators.required),
+              amount: new FormControl(ingredient.amount, [
                 Validators.required,
                 Validators.pattern(/^[1-9]+[0-9]*$/)
               ])
@@ -138,28 +160,36 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
           );
         });
       }
-
     }
     this.recipeForm = new FormGroup({
-      'name': new FormControl(recipeName, Validators.required),
-      'description': new FormControl(recipeDescription, Validators.required),
-      'ingredients': recipeIngredients,
-      'imageURL': new FormControl(recipeImageURL)
+      name: new FormControl(recipeName, Validators.required),
+      description: new FormControl(recipeDescription, Validators.required),
+      ingredients: recipeIngredients,
+      imageURL: new FormControl(recipeImageURL)
       // 'images': recipeUploadedImages
     });
+
   }
 
   onSubmit() {
-    // const newRecipe = new Recipe(
-    //   this.recipeForm.value['name'],
-    //   this.recipeForm.value['description'],
-    //   this.recipeForm.value['imagePath'],
-    //   this.recipeForm.value['ingredients']
-    // );
+    const imagesUploadedMerged = this.imagesUploadedSaved.concat(
+      this.imagesUploadedResponse
+    );
+
+    const newRecipe = new Recipe(
+      this.recipeForm.value['name'],
+      this.recipeForm.value['description'],
+      this.recipeForm.value['ingredients'],
+      this.recipeForm.value['imageURL'],
+      imagesUploadedMerged
+    );
+
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+      // this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+      this.recipeService.updateRecipe(this.id, newRecipe);
     } else {
-      this.recipeService.addRecipe(this.recipeForm.value);
+      // this.recipeService.addRecipe(this.recipeForm.value);
+      this.recipeService.addRecipe(newRecipe);
     }
     // this.recipeForm.reset();
     this.onCancel();
@@ -168,8 +198,8 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
   onAddIngredient() {
     (<FormArray>this.recipeForm.get('ingredients')).push(
       new FormGroup({
-        'name': new FormControl(null, Validators.required),
-        'amount': new FormControl(null, [
+        name: new FormControl(null, Validators.required),
+        amount: new FormControl(null, [
           Validators.required,
           Validators.pattern(/^[1-9]+[0-9]*$/)
         ])
@@ -182,62 +212,25 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
   }
 
   onCancel() {
+    this.imagesUploadedSaved = null;
+    this.imagesUploadedResponse = null;
+
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
-  // openUploadWidget() {
-  //   const folder = this.authService.getFullEmail();
-  //   // cloudinary.openUploadWidget({
-  //   //   cloud_name: 'dwrqw2e4u',
-  //   //   upload_preset: 'cpgu2jvp',
-  //   //   sources: ['local'],
-  //   //   max_files: 6,
-  //   //   folder: folder,
-  //   //   resource_type: 'image',
-  //   //   max_file_size: 10000000, // (10 MB)
-  //   //   theme: 'purple'
-  //   // }, (error, result) => {
-  //   //     if (error) {
-  //   //       console.log(error);
-  //   //     }
-  //   //     this.imagesUploadResponse = result;
-  //   //   });
-  //   cloudinary.openUploadWidget({
-  //     cloud_name: 'dwrqw2e4u',
-  //     api_key: '514982885216574',
-  //     upload_preset: 'cpgu2jvp',
-  //     sources: ['local'],
-  //     max_files: 8,
-  //     folder: folder,
-  //     resource_type: 'image',
-  //     max_file_size: 10000000 // (10 MB)
-  //     // theme: 'purple' // too slow -> 80kb background by default
-  //   }, (error, result) => {
-  //     if (error) {
-  //       console.log(error);
-  //     }
-  //     result.map(element => {
-  //       this.imagesUploadResponse.push(new UploadImage(
-  //         element.url,
-  //         element.thumbnail_url,
-  //         element.original_filename,
-  //         element.delete_token,
-  //         element.format,
-  //         element.public_id,
-  //         element.bytes
-  //       ));
-  //     });
-  //     // this.imagesUploadResponse = result;
-  //     console.log(this.imagesUploadResponse);
-  //   });
-  // }
+  onDeleteImageUploadResponse(public_id) {
+    for (let i = 0; i < this.imagesUploadedResponse.length; i++) {
+      if (this.imagesUploadedResponse[i].public_id === public_id) {
+        this.imagesUploadedResponse.splice(i, 1);
+      }
+    }
+  }
 
-  // onDeleteImage(delete_token) {
-  //   // console.log(delete_token);
-  //   // console.log(cloudinary);
-  //   $.cloudinary.delete_by_token(delete_token);
-  //   // curl https://api.cloudinary.com/v1_1/demo/delete_by_token -X POST --data 'token=delete_token'
-
-  // }
-
+  onDeleteImageUploadSaved(public_id) {
+    for (let i = 0; i < this.imagesUploadedSaved.length; i++) {
+      if (this.imagesUploadedSaved[i].public_id === public_id) {
+        this.imagesUploadedSaved.splice(i, 1);
+      }
+    }
+  }
 }

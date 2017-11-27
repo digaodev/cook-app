@@ -1,6 +1,6 @@
 .ingredients-row,
 .images-row {
-  margin: 0.5em;
+  margin: 1em 0;
 }
 
 input.ng-invalid.ng-touched,
@@ -9,7 +9,17 @@ textarea.ng-invalid.ng-touched {
   border: 1px solid red;
 }
 
-.image-preview {
-  max-width: 15%;
+.image-item {
+  margin: 0.5em;
+  display: inline-block;
+}
+
+.image-item__image-preview {
   display: inline;
+}
+
+.image-item__remove-image {
+  color: red;
+  cursor: pointer;
+  padding: 0.5em;
 }
