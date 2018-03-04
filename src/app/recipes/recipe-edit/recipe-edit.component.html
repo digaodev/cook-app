@@ -60,7 +60,6 @@
             <div class="image-item">
               <img [src]="image.thumbnail_url" class="img-responsive image-item__image-preview">
 
-              <!-- <button type="button" class="btn btn-danger" (click)="onDeleteImage(image.public_id)">x</button> -->
               <div class="text-center">
                 <a class="image-item__remove-image" (click)="onDeleteImageUploadResponse(image.public_id)">Remover</a>
               </div>
@@ -79,6 +78,7 @@
           <span *ngFor="let image of imagesUploadedSaved">
             <div class="image-item">
               <img [src]="image.thumbnail_url" class="img-responsive image-item__image-preview">
+
               <div class="text-center">
                 <a class="image-item__remove-image" (click)="onDeleteImageUploadSaved(image.public_id)">Remover</a>
               </div>
@@ -87,6 +87,28 @@
 
         </div>
       </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col-xs-12 images-row">
+
+          <span *ngFor="let image of imagesUploadedResponseAuthor">
+            <div class="image-item">
+              <img [src]="image.thumbnail_url" class="img-responsive image-item__image-preview">
+
+              <div class="text-center">
+                <a class="image-item__remove-image" (click)="onDeleteImageUploadResponse(image.public_id)">Remover</a>
+              </div>
+            </div>
+          </span>
+
+        </div>
+      </div>
+
+      <a id="upload-widget-btn-author"></a>
+
+      <hr>
 
       <div class="row">
         <div class="col-xs-12" formArrayName="ingredients">

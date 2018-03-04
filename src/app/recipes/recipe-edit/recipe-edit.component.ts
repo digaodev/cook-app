@@ -12,7 +12,6 @@ import { UploadedImage } from './../../shared/uploadedImage.model';
 
 import { RecipeService } from './../recipe.service';
 import { AuthService } from '../../auth/auth.service';
-// import { CloudinaryService } from '../../shared/cloudinary.service';
 
 declare const cloudinary: any;
 declare const $: any;
@@ -29,6 +28,7 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
   imagesUploaded = [];
   imagesUploadedSaved = [];
   imagesUploadedResponse = [];
+  imagesUploadedResponseAuthor = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -46,11 +46,13 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
   }
 
   ngAfterContentInit() {
-    const folder = this.authService.getFullEmail();
+    // https://support.cloudinary.com/hc/en-us/articles/208335765-Why-shouldn-t-I-use-underscore-within-folder-names-
+    // const folder = this.authService.getFullEmail();
+    const folder = this.authService.getUsernameFromEmail().replace('_', '');
     const tags = ['user'];
     const buttonCaption = 'Clique para fazer upload de imagens';
     const sources = ['local'];
-    const maxFiles = 4;
+    const maxFiles = 2;
     const maxFileSize = 10000000; // (10 MB);
     const resourceType = 'image';
 
@@ -121,9 +123,43 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
             );
           }
         }
-        // console.log('error', error);
-        // console.log('result', result);
-        // console.log('imagesUploadedResponse => ', this.imagesUploadedResponse);
+      }
+    );
+
+    const folderAuthor = this.authService.getUsernameFromEmail().replace('_', '');
+    const tagsAuthor = ['author'];
+    const buttonCaptionAuthor = 'Clique para fazer upload do Autor';
+
+    cloudinary.applyUploadWidget(
+      document.getElementById('upload-widget-btn-author'),
+      {
+        cloud_name: 'dwrqw2e4u',
+        api_key: '514982885216574',
+        upload_preset: 'hrxjoxko',
+        folder: folder,
+        tags: tagsAuthor,
+        sources: sources,
+        max_files: maxFiles,
+        max_file_size: maxFileSize,
+        resource_type: resourceType,
+        button_caption: buttonCaptionAuthor,
+        stylesheet: cssStylesheet
+      },
+      (error, result) => {
+        if (result) {
+          for (const image of result) {
+            this.imagesUploadedResponseAuthor.push(
+              new UploadedImage(
+                image.secure_url,
+                image.thumbnail_url,
+                image.original_filename,
+                image.format,
+                image.public_id,
+                image.bytes
+              )
+            );
+          }
+        }
       }
     );
   }
@@ -168,7 +204,6 @@ export class RecipeEditComponent implements OnInit, AfterContentInit {
       imageURL: new FormControl(recipeImageURL)
       // 'images': recipeUploadedImages
     });
-
   }
 
   onSubmit() {
